@@ -1,0 +1,120 @@
+<html lang="en" ng-app="myApp">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Connect to DB for given details</title>
+<link href="css/bootstrap.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="/css/ngDatepicker.css">
+<style>
+input {
+	font-family: Gill Sans, Verdana;
+	font-size: 11px;
+}
+
+span {
+	font-family: Gill Sans, Verdana;
+	font-size: 11px;
+	color: #fdd3ce;
+}
+</style>
+<script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
+<script src="/js/ngDatepicker.min.js"></script>
+
+<script type="text/javascript">
+angular.module('itemervice',[]).factory('itemFactory',function($http,$window){
+	return{
+		createItem: function(item){
+			
+			var months = 12 ;
+			/**var date = new Date(item.dateValue) ;
+			var selectedDate  = date.getFullYear() +"-"+ ((date.getMonth()+1) < 10 ? '0' : '') + (date.getMonth()+1)+"-"+(date.getDate() < 10 ? '0' : '') + date.getDate() ;
+			console.log("selectedDate :: "+ selectedDate) ; */
+			  
+			$http.post('nextButton?dburl='+item.itemId+'&username='+item.itemName+'&password='+item.quantity)
+			.then(function(data){
+				console.log('data : ' +JSON.stringify(data)) ;
+				$window.location.href='/registerNumber.jsp';
+			})
+			.catch(function(data){
+				alert("not Created") ;
+				console.log('data :'+JSON.stringify(data)) ;
+				console.log('data :'+angular.fromJson(data)) ;
+				console.log('data : '+angular.fromJson(data.response)) ;
+				console.log('data : '+data.response) ;
+				
+			});
+		},
+	}
+});
+var app = angular.module("myApp", [ 'itemervice']);
+app.controller('myCtrl',function($scope, $http, itemFactory, $filter) {
+					//for validating the form before submitting
+					$scope.onlyNumbers = /^[1-9]+[0-9]*$/;
+					$scope.submitForm = function(isValid,item) {
+				    if (isValid) {
+					  itemFactory.createItem(item);
+				      //alert('Item has been created Successfully');
+				      $scope.reset();
+				     
+				    }
+					};
+					
+					
+					$scope.reset = function() {
+					      $scope.item = {};
+					      $scope.itemForm.$setPristine();
+					    }
+					
+				});
+ </script>
+</head>
+<body>
+	<div ng-controller="myCtrl" align="left">
+		<h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			Connect to DB for given details</h3>
+		<form class="form-horizontal" align="center" role="form"
+			name="itemForm" ng-submit="submitForm(true,item)"
+			novalidate>
+			<div class="form-group">
+				<label for="itemId" class="col-sm-2 control-label">DB URL </label>
+				<div class="col-sm-4">
+					<input class="form-control" name="itemId" placeholder="db url"
+						ng-model="item.itemId"> <span
+						ng-show="(itemForm.itemId.$dirty || !itemForm.itemId.length || isValid) && itemForm.itemId.$error.required">
+						DB URL is required </span>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="itemName" class="col-sm-2 control-label"> User
+					Name </label>
+				<div class="col-sm-4">
+					<input class="form-control" placeholder="User Name" name="itemName"
+						ng-model="item.itemName" required> <span
+						ng-show="(itemForm.itemName.$dirty || !itemForm.itemName.length || isValid) && itemForm.itemName.$error.required" >
+						User Name is required </span>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="quantity" class="col-sm-2 control-label">Password</label>
+				<div class="col-sm-4">
+					<input class="form-control" placeholder="Password" name="quantity"
+						ng-model="item.quantity"> <span
+						ng-show="(itemForm.quantity.$dirty || !itemForm.quantity.length || isValid) && itemForm.quantity.$error.required" >
+						Password is required </span>
+				</div>
+			</div>
+			<div class="controls" class="col-sm-2">
+				
+				<button class="btn btn-success" type="submit">Next</button>
+		
+			</div>
+	</form>
+	</div>
+</body>
+</html>
